@@ -12,23 +12,34 @@ class getline_range
 {
 	friend ranges::range_access;
 
-	std::string_view read() const { return m_Line; }
+	[[nodiscard]]
+	std::string_view read() const noexcept { return m_Line; }
 
-	bool equal(ranges::default_sentinel_t) const { return !m_IStream->good(); }
+	[[nodiscard]]
+	bool equal(ranges::default_sentinel_t) const { return empty(); }
 
-	void next() { std::getline(*m_IStream, m_Line); }
+	[[nodiscard]]
+	void next()
+	{
+		std::getline(*m_IStream, m_Line);
+	}
 
 public:
+	[[nodiscard]]
 	getline_range() = default;
 
+	[[nodiscard]]
 	explicit getline_range(std::istream& in)
-		: m_IStream{ std::addressof(in) }
+		: m_IStream{std::addressof(in)}
 	{
 		next();
 	}
 
+	[[nodiscard]]
+	bool empty() const { return !m_IStream->good(); }
+
 private:
-	std::istream* m_IStream;
+	std::istream* m_IStream{};
 	std::string m_Line{};
 };
 
@@ -41,12 +52,12 @@ constexpr auto to_int = [](const std::string_view str)
 
 void do_part1()
 {
-	std::ifstream in{ std::filesystem::path{ INPUT_DIR } / "input.txt" };
-	int result{ 0 };
-	while (in.good())
+	std::ifstream in{std::filesystem::path{INPUT_DIR} / "input.txt"};
+	int result{0};
+	while (getline_range getline{in})
 	{
 		const int cur = ranges::accumulate(
-			getline_range{ in }
+			getline
 			| ranges::views::take_while(std::not_fn(&std::string_view::empty))
 			| std::views::transform(to_int),
 			0
@@ -63,10 +74,10 @@ void do_part2()
 {
 	std::ifstream in{ std::filesystem::path{ INPUT_DIR } / "input.txt" };
 	std::array<int, 3> results{};
-	while (in.good())
+	while (getline_range getline{in})
 	{
 		const int cur = ranges::accumulate(
-			getline_range{ in }
+			getline
 			| ranges::views::take_while(std::not_fn(&std::string_view::empty))
 			| std::views::transform(to_int),
 			0
@@ -85,12 +96,12 @@ void do_part2()
 
 void do_part2()
 {
-	std::ifstream in{ std::filesystem::path{ INPUT_DIR } / "input.txt" };
+	std::ifstream in{std::filesystem::path{INPUT_DIR} / "input.txt"};
 	std::vector<int> results{};
-	while (in.good())
+	while (getline_range getline{in})
 	{
 		const int cur = ranges::accumulate(
-			getline_range{ in }
+			getline
 			| ranges::views::take_while(std::not_fn(&std::string_view::empty))
 			| std::views::transform(to_int),
 			0
