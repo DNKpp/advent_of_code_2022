@@ -86,7 +86,7 @@ void do_part2()
 void do_part2()
 {
 	std::ifstream in{ std::filesystem::path{ INPUT_DIR } / "input.txt" };
-	std::vector<int> results(1000);
+	std::vector<int> results{};
 	while (in.good())
 	{
 		const int cur = ranges::accumulate(
