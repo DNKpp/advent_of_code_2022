@@ -33,6 +33,7 @@ void do_part1()
 			return calc_score(*iter);
 		}
 	);
+
 	fmt::print("part 1 answer is: {}\n", result);
 }
 
@@ -65,7 +66,7 @@ void do_part2()
 		0
 	);
 
-	fmt::print("part 1 answer is: {}\n", result);
+	fmt::print("part 2 answer is: {}\n", result);
 }
 
 int main()
