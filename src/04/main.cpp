@@ -24,7 +24,24 @@ struct bounds
 	{
 		return begin <= other.begin && other.end <= end;
 	}
+
+	[[nodiscard]]
+	constexpr bool overlapping(const bounds& other) const noexcept
+	{
+		return 0 <= std::min(end, other.end) - std::max(begin, other.begin);
+	}
 };
+
+inline std::tuple<bounds, bounds> parse_bound_pair(const std::string_view str)
+{
+	static const std::regex pattern{ R"((\d+)-(\d+),(\d+)-(\d+))" };
+	std::cmatch matchResult{};
+	std::regex_match(str.data(), matchResult, pattern);
+	auto matchedInts = matchResult
+						| std::views::transform(&std::csub_match::str)
+						| std::views::transform(to_int);
+	return { bounds{ matchedInts[1], matchedInts[2] }, bounds{ matchedInts[3], matchedInts[4] } };
+}
 
 void do_part1()
 {
@@ -32,20 +49,9 @@ void do_part1()
 
 	const auto result = std::ranges::count_if(
 		getline_range{ in }
-		| std::views::transform(
-			[](const std::string_view str)
-			{
-				static const std::regex pattern{ R"((\d+)-(\d+),(\d+)-(\d+))" };
-				std::cmatch matchResult{};
-				std::regex_match(str.data(), matchResult, pattern);
-				auto matchedInts = matchResult
-									| std::views::transform(&std::csub_match::str)
-									| std::views::transform(to_int);
-				return std::tuple{ bounds{ matchedInts[1], matchedInts[2] }, bounds{ matchedInts[3], matchedInts[4] } };
-			}
-		),
+		| std::views::transform(parse_bound_pair),
 		sf::tuple::apply(
-			[](const bounds& lhs, const bounds& rhs) {  return lhs.contains(rhs) || rhs.contains(lhs); }
+			[](const bounds& lhs, const bounds& rhs) { return lhs.contains(rhs) || rhs.contains(lhs); }
 		)
 	);
 
@@ -54,7 +60,15 @@ void do_part1()
 
 void do_part2()
 {
-	// fmt::print("part 2 answer is: {}\n", result);
+	std::ifstream in{ std::filesystem::path{ INPUT_DIR } / "input.txt" };
+
+	const auto result = std::ranges::count_if(
+		getline_range{ in }
+		| std::views::transform(parse_bound_pair),
+		sf::tuple::apply(&bounds::overlapping)
+	);
+
+	fmt::print("part 2 answer is: {}\n", result);
 }
 
 int main()
