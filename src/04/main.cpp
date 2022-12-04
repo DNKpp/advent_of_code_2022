@@ -28,11 +28,11 @@ struct bounds
 	[[nodiscard]]
 	constexpr bool overlapping(const bounds& other) const noexcept
 	{
-		return 0 <= std::min(end, other.end) - std::max(begin, other.begin);
+		return begin <= other.end && other.begin <= end;
 	}
 };
 
-inline std::tuple<bounds, bounds> parse_bound_pair(const std::string_view str)
+std::tuple<bounds, bounds> parse_bound_pair(const std::string_view str)
 {
 	static const std::regex pattern{ R"((\d+)-(\d+),(\d+)-(\d+))" };
 	std::cmatch matchResult{};
