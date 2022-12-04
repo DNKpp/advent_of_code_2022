@@ -7,48 +7,7 @@
 #include <fmt/format.h>
 #include <range/v3/all.hpp>
 
-class getline_range
-	: public ranges::view_facade<getline_range>
-{
-	friend ranges::range_access;
-
-	[[nodiscard]]
-	std::string_view read() const noexcept { return m_Line; }
-
-	[[nodiscard]]
-	bool equal(ranges::default_sentinel_t) const { return empty(); }
-
-	[[nodiscard]]
-	void next()
-	{
-		std::getline(*m_IStream, m_Line);
-	}
-
-public:
-	[[nodiscard]]
-	getline_range() = default;
-
-	[[nodiscard]]
-	explicit getline_range(std::istream& in)
-		: m_IStream{std::addressof(in)}
-	{
-		next();
-	}
-
-	[[nodiscard]]
-	bool empty() const { return !m_IStream->good(); }
-
-private:
-	std::istream* m_IStream{};
-	std::string m_Line{};
-};
-
-constexpr auto to_int = [](const std::string_view str)
-{
-	int temp{};
-	std::from_chars(str.data(), str.data() + str.size(), temp);
-	return temp;
-};
+#include "utility.hpp"
 
 void do_part1()
 {
