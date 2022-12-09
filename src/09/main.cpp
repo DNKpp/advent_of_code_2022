@@ -20,7 +20,7 @@ namespace sf = sl::functional;
 
 using vec = sl::vec::Vector<int, 2>;
 
-std::vector<vec> parse_direction(std::string_view str)
+auto parse_direction(std::string_view str)
 {
 	const char dirStr = str.front();
 	str.remove_prefix(2);
@@ -38,7 +38,7 @@ std::vector<vec> parse_direction(std::string_view str)
 		return { 0, 0 };
 	}();
 
-	return std::vector(dist, dir);
+	return ranges::views::repeat_n(dir, dist);
 }
 
 template <std::size_t VKnots>
@@ -57,11 +57,7 @@ int simulate(std::istream& in)
 	{
 		segments.front() += dir;
 
-		for (auto&& [leading, trailing] : ranges::views::zip(
-				segments | ranges::views::const_,
-				segments | ranges::views::tail
-			)
-		)
+		for (auto&& [leading, trailing] : ranges::views::zip(segments, segments | ranges::views::tail))
 		{
 			if (auto diff = leading - trailing; 2 < length_squared(diff))
 			{
