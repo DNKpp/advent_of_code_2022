@@ -22,13 +22,9 @@ using vec = sl::vec::Vector<int, 2>;
 
 auto parse_direction(std::string_view str)
 {
-	const char dirStr = str.front();
-	str.remove_prefix(2);
-	const int dist = to_int(str);
-
 	const vec dir = [&]() -> vec
 	{
-		switch (dirStr)
+		switch (str.front())
 		{
 		case 'L': return { -1, 0 };
 		case 'R': return { 1, 0 };
@@ -38,7 +34,9 @@ auto parse_direction(std::string_view str)
 		return { 0, 0 };
 	}();
 
-	return ranges::views::repeat_n(dir, dist);
+	str.remove_prefix(2);
+
+	return ranges::views::repeat_n(dir, to_int(str));
 }
 
 template <std::size_t VKnots>
