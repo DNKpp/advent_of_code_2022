@@ -30,6 +30,13 @@ CPMDeclarePackage(
 )
 
 CPMDeclarePackage(
+	Simple-Vector
+	GIT_TAG v1.3.0
+	GITHUB_REPOSITORY DNkpp/Simple-Vector
+	EXCLUDE_FROM_ALL YES
+)
+
+CPMDeclarePackage(
 	fmt
 	GIT_TAG 9.1.0
 	GITHUB_REPOSITORY fmtlib/fmt
