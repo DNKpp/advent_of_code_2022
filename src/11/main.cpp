@@ -103,10 +103,11 @@ std::vector<monkey> parse_monkeys(std::istream& in)
 template <int VTurns, std::int64_t VDiv>
 std::int64_t simulate_monkeys(std::vector<monkey> monkeys, const std::int64_t worryMod = std::numeric_limits<std::int64_t>::max())
 {
-	std::vector<std::int64_t> inspectionCounts(monkeys.size());
-	for (auto [turn, data] : rv::cartesian_product(rv::iota(0, VTurns), rv::zip(monkeys, inspectionCounts)))
+	std::vector<std::int64_t> inspectionCounts(monkeys.size(), 0);
+	for (auto r = rv::zip(monkeys, inspectionCounts);
+		auto&& [monkey, inspections] : r | rv::cycle | rv::take(monkeys.size() * VTurns)
+	)
 	{
-		auto& [monkey, inspections] = data;
 		for (const auto item : monkey.items)
 		{
 			item_lvl lvl = (monkey.operation(item) % worryMod) / VDiv;
@@ -122,7 +123,7 @@ std::int64_t simulate_monkeys(std::vector<monkey> monkeys, const std::int64_t wo
 
 	std::ranges::nth_element(
 		inspectionCounts,
-		inspectionCounts.begin() + 1,
+		std::next(inspectionCounts.begin()),
 		std::greater{}
 	);
 
